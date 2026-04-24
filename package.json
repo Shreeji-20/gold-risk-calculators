@@ -1,0 +1,13 @@
+{
+  "name": "martingale-calculator",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Static trade basket calculator suite with martingale, dual-grid, and simple-grid models.",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "test": "node --test calculator-core.test.js",
+    "test:watch": "node --test --watch calculator-core.test.js"
+  }
+}

@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Browser-based martingale, dual-grid, and simple-grid trade basket calculators with export support and shared tested calculation logic.">
+  <meta name="theme-color" content="#09090b">
+  <title>Trade Basket Calculators</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <noscript>
+    <div class="noscript-shell">
+      <div class="panel">
+        <div class="section-head">
+          <h2>JavaScript Required</h2>
+          <p>This app runs entirely in the browser. Enable JavaScript to use the calculators and exports.</p>
+        </div>
+      </div>
+    </div>
+  </noscript>
+  <div class="page-shell">
+    <header class="site-header">
+      <div class="site-brand">
+        <h1>Trade Basket Calculators</h1>
+        <p>Switch between martingale, dual-grid, and simple-grid calculators from one workspace.</p>
+      </div>
+      <aside class="export-dock">
+        <div class="dock-actions">
+          <button type="button" id="export-pdf" class="secondary-button" disabled>PDF</button>
+          <button type="button" id="export-xlsx" class="primary-button" disabled>Excel</button>
+        </div>
+        <p id="export-status" class="dock-status" role="status" aria-live="polite">Run a martingale simulation or basket analysis to enable exports.</p>
+      </aside>
+    </header>
+
+    <main class="workspace-shell">
+      <aside class="panel calculator-sidebar">
+        <div class="section-head">
+          <h2>Calculators</h2>
+          <p>Choose the pricing model you want to inspect.</p>
+        </div>
+
+        <nav class="calculator-nav" aria-label="Calculator navigation">
+          <button
+            type="button"
+            class="calculator-nav-button is-active"
+            data-calculator-target="martingale"
+            aria-pressed="true"
+          >
+            <span class="nav-title">Martingale Suite</span>
+            <span class="nav-copy">Scenario simulation plus live basket analysis with rolling cuts.</span>
+          </button>
+
+          <button
+            type="button"
+            class="calculator-nav-button"
+            data-calculator-target="dual-grid"
+            aria-pressed="false"
+          >
+            <span class="nav-title">Dual Grid MTM</span>
+            <span class="nav-copy">Replicates the dual_grid_mtm.py ladder and marks every order to market.</span>
+          </button>
+
+          <button
+            type="button"
+            class="calculator-nav-button"
+            data-calculator-target="simple-grid"
+            aria-pressed="false"
+          >
+            <span class="nav-title">Simple Grid MTM</span>
+            <span class="nav-copy">Builds one buy or sell order at every fixed grid step until the current price.</span>
+          </button>
+        </nav>
+      </aside>
+
+      <div class="calculator-stage">
+        <section class="calculator-view" data-calculator-view="martingale">
+          <div class="layout">
+            <section class="panel controls-panel">
+              <div class="section-head">
+                <h2>Scenario Simulator</h2>
+                <p>Run multiple setups in one pass.</p>
+              </div>
+
+              <form id="simulator-form" class="form-grid" novalidate>
+                <label>
+                  <span>Direction</span>
+                  <select name="direction">
+                    <option value="buy">Buy</option>
+                    <option value="sell">Sell</option>
+                  </select>
+                </label>
+
+                <label>
+                  <span>Reference Price</span>
+                  <input type="text" inputmode="decimal" name="firstEntryPrice" value="4104">
+                </label>
+
+                <label>
+                  <span>Entry Spacing</span>
+                  <input type="text" inputmode="decimal" name="entrySpacing" value="2">
+                </label>
+
+                <label>
+                  <span>Base Lot</span>
+                  <input type="text" inputmode="decimal" name="baseLot" value="0.01" placeholder="0.01">
+                </label>
+
+                <label>
+                  <span>Iterations (X)</span>
+                  <input type="text" inputmode="numeric" name="iterations" value="12">
+                </label>
+
+                <label>
+                  <span>Keep Max Open Trades</span>
+                  <input type="text" inputmode="numeric" name="maxOpenTrades" value="3">
+                </label>
+
+                <label>
+                  <span>TP Distance From Break-Even</span>
+                  <input type="text" inputmode="decimal" name="tpDistance" value="2">
+                </label>
+
+                <label>
+                  <span>Lot Multipliers (comma or semicolon separated)</span>
+                  <input type="text" name="multipliers" value="1.5, 2, 3">
+                </label>
+
+                <label>
+                  <span>Increase After Every N Trades (comma or semicolon separated)</span>
+                  <input type="text" name="stepSchedules" value="2, 3">
+                </label>
+
+                <label>
+                  <span>USD P/L For $1 Move At 1.0 Lot</span>
+                  <input type="text" inputmode="decimal" name="valuePerPoint" value="100">
+                </label>
+
+                <label class="checkbox-row">
+                  <input type="checkbox" name="autoCut" checked>
+                  <span>Auto-cut the oldest trade whenever the basket exceeds the open-trade cap</span>
+                </label>
+
+                <button type="submit" class="primary-button">Run Simulation</button>
+              </form>
+            </section>
+
+            <section class="panel output-panel">
+              <div class="section-head">
+                <h2>Simulation Output</h2>
+                <p>Comparison summary plus per-iteration detail for each setup.</p>
+              </div>
+              <div id="simulation-output"></div>
+            </section>
+
+            <section class="panel basket-panel">
+              <div class="section-head">
+                <h2>Live Basket Analyzer</h2>
+                <p>Paste your current positions and see how the oldest trades are rolled out to respect your chosen open-trade cap.</p>
+              </div>
+
+              <div class="basket-inner">
+                <form id="basket-form" class="form-grid" novalidate>
+                  <label>
+                    <span>Direction</span>
+                    <select name="direction">
+                      <option value="buy">Buy</option>
+                      <option value="sell">Sell</option>
+                    </select>
+                  </label>
+
+                  <label>
+                    <span>Current Price</span>
+                    <input type="text" inputmode="decimal" name="currentPrice" value="4098">
+                  </label>
+
+                  <label>
+                    <span>Keep Max Open Trades</span>
+                    <input type="text" inputmode="numeric" name="maxOpenTrades" value="3">
+                  </label>
+
+                  <label>
+                    <span>TP Distance From Break-Even</span>
+                    <input type="text" inputmode="decimal" name="tpDistance" value="2">
+                  </label>
+
+                  <label>
+                    <span>USD P/L For $1 Move At 1.0 Lot</span>
+                    <input type="text" inputmode="decimal" name="valuePerPoint" value="100">
+                  </label>
+
+                  <label class="wide-field">
+                    <span>Open Positions (one per line: price, lot or price; lot)</span>
+                    <textarea name="positions" rows="8">4104,0.10
+4102,0.10
+4100,0.15
+4098,0.15
+4096,0.225</textarea>
+                  </label>
+
+                  <button type="submit" class="primary-button">Analyze Basket</button>
+                </form>
+
+                <div class="basket-output-col">
+                  <div id="basket-output" class="basket-output"></div>
+                </div>
+              </div>
+            </section>
+          </div>
+        </section>
+
+        <section class="calculator-view" data-calculator-view="dual-grid" hidden>
+          <div class="grid-calculator-layout">
+            <section class="panel grid-calculator-controls">
+              <div class="section-head">
+                <h2>Dual Grid Inputs</h2>
+                <p>Matches the downward ladder used in dual_grid_mtm.py.</p>
+              </div>
+
+              <form id="dual-grid-form" class="form-grid" novalidate>
+                <label>
+                  <span>Start Price</span>
+                  <input type="text" inputmode="decimal" name="startPrice" value="5234">
+                </label>
+
+                <label>
+                  <span>Current / End Price</span>
+                  <input type="text" inputmode="decimal" name="currentPrice" value="5014">
+                </label>
+
+                <label>
+                  <span>Grid A</span>
+                  <input type="text" inputmode="decimal" name="gridA" value="4">
+                </label>
+
+                <label>
+                  <span>Grid B</span>
+                  <input type="text" inputmode="decimal" name="gridB" value="10">
+                </label>
+
+                <label>
+                  <span>Lot Size</span>
+                  <input type="text" inputmode="decimal" name="lotSize" value="0.01">
+                </label>
+
+                <label>
+                  <span>Contract Size</span>
+                  <input type="text" inputmode="decimal" name="contractSize" value="100">
+                </label>
+
+                <button type="submit" class="primary-button">Calculate Dual Grid MTM</button>
+              </form>
+            </section>
+
+            <section class="panel grid-calculator-output-panel">
+              <div class="section-head">
+                <h2>Dual Grid Output</h2>
+                <p>Order ladder, average break-even, and floating P/L for the full grid basket.</p>
+              </div>
+              <div id="dual-grid-output"></div>
+            </section>
+          </div>
+        </section>
+
+        <section class="calculator-view" data-calculator-view="simple-grid" hidden>
+          <div class="grid-calculator-layout">
+            <section class="panel grid-calculator-controls">
+              <div class="section-head">
+                <h2>Simple Grid Inputs</h2>
+                <p>Add one buy on each fall or one sell on each rise by a fixed grid step.</p>
+              </div>
+
+              <form id="simple-grid-form" class="form-grid" novalidate>
+                <label>
+                  <span>Direction</span>
+                  <select name="direction">
+                    <option value="buy">Buy</option>
+                    <option value="sell">Sell</option>
+                  </select>
+                </label>
+
+                <label>
+                  <span>Start Price</span>
+                  <input type="text" inputmode="decimal" name="startPrice" value="5234">
+                </label>
+
+                <label>
+                  <span>Current / End Price</span>
+                  <input type="text" inputmode="decimal" name="currentPrice" value="5194">
+                </label>
+
+                <label>
+                  <span>Grid Spacing</span>
+                  <input type="text" inputmode="decimal" name="gridSpacing" value="10">
+                </label>
+
+                <label>
+                  <span>Lot Size</span>
+                  <input type="text" inputmode="decimal" name="lotSize" value="0.01">
+                </label>
+
+                <label>
+                  <span>Contract Size</span>
+                  <input type="text" inputmode="decimal" name="contractSize" value="100">
+                </label>
+
+                <button type="submit" class="primary-button">Calculate Simple Grid MTM</button>
+              </form>
+            </section>
+
+            <section class="panel grid-calculator-output-panel">
+              <div class="section-head">
+                <h2>Simple Grid Output</h2>
+                <p>One-direction ladder, weighted break-even, and floating P/L for the basket.</p>
+              </div>
+              <div id="simple-grid-output"></div>
+            </section>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <template id="empty-state-template">
+    <div class="empty-state">
+      <p>Run a simulation to see comparison cards, iteration tables, and rolling cut decisions.</p>
+    </div>
+  </template>
+
+  <script src="vendor/xlsx.full.min.js" defer></script>
+  <script src="vendor/jspdf.umd.min.js" defer></script>
+  <script src="vendor/jspdf.plugin.autotable.min.js" defer></script>
+  <script src="calculator-core.js" defer></script>
+  <script src="script.js" defer></script>
+</body>
+</html>

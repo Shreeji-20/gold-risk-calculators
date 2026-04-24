@@ -1,0 +1,752 @@
+/* ===== Design Tokens ===== */
+:root {
+  --bg: #09090b;
+  --card: #18181b;
+  --border: #27272a;
+  --border-dim: rgba(255, 255, 255, 0.05);
+  --text: #fafafa;
+  --text-2: #a1a1aa;
+  --text-muted: #71717a;
+  --mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Consolas, monospace;
+  --green: #4ade80;
+  --red: #f87171;
+  --amber: #fbbf24;
+  --r: 8px;
+  --r-lg: 12px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+  .noscript-shell {
+    max-width: 1560px;
+    margin: 0 auto;
+    padding: 24px 24px 0;
+  }
+html {
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+  .dock-status.is-error {
+    color: #ffc1bb;
+  }
+
+/* ===== Shell ===== */
+.page-shell {
+  max-width: 1560px;
+  margin: 0 auto;
+  padding: 0 24px 64px;
+}
+
+.workspace-shell {
+  display: grid;
+  grid-template-columns: 248px minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+}
+
+.calculator-stage,
+.calculator-view {
+  min-width: 0;
+}
+
+.calculator-sidebar {
+  position: sticky;
+  top: 16px;
+}
+
+.calculator-nav {
+  display: grid;
+  gap: 10px;
+}
+
+.calculator-nav-button {
+  display: grid;
+  gap: 4px;
+  width: 100%;
+  padding: 14px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 120ms, background 120ms, transform 120ms;
+}
+
+.calculator-nav-button:hover {
+  border-color: #3f3f46;
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.calculator-nav-button.is-active {
+  border-color: rgba(125, 211, 252, 0.38);
+  background: linear-gradient(180deg, rgba(14, 116, 144, 0.18), rgba(255, 255, 255, 0.03));
+  box-shadow: inset 0 0 0 1px rgba(125, 211, 252, 0.14);
+}
+
+.nav-title {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.nav-copy {
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.55;
+}
+
+/* ===== Site Header ===== */
+.site-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 24px;
+}
+
+.site-brand h1 {
+  margin: 0 0 3px;
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+}
+
+.site-brand > p {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+/* ===== Export Dock ===== */
+.export-dock {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.dock-label {
+  display: none;
+}
+
+.dock-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.dock-status {
+  margin: 0;
+  font-size: 12px;
+  color: var(--text-muted);
+  max-width: 220px;
+  text-align: right;
+}
+
+/* ===== Main Layout ===== */
+.layout {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  grid-template-rows: auto auto;
+  gap: 16px;
+  align-items: start;
+}
+
+.controls-panel {
+  grid-column: 1;
+  grid-row: 1;
+  min-width: 0;
+}
+
+.output-panel {
+  grid-column: 2;
+  grid-row: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.basket-panel {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  min-width: 0;
+}
+
+.grid-calculator-layout {
+  display: grid;
+  grid-template-columns: 340px minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+}
+
+.grid-calculator-controls,
+.grid-calculator-output-panel {
+  min-width: 0;
+}
+
+/* ===== Panel ===== */
+.panel {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 20px;
+}
+
+.section-head {
+  margin-bottom: 16px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.section-head h2 {
+  margin: 0 0 3px;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.section-head p {
+  margin: 0;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* ===== Form ===== */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+label {
+  display: grid;
+  gap: 5px;
+}
+
+label span {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-2);
+}
+
+input,
+select,
+textarea,
+button {
+  font: inherit;
+}
+
+input,
+select {
+  width: 100%;
+  height: 34px;
+  padding: 0 10px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  color: var(--text);
+  font-size: 13px;
+  outline: none;
+  transition: border-color 120ms;
+}
+
+input::placeholder {
+  color: var(--text-muted);
+}
+
+input:focus,
+select:focus {
+  border-color: #52525b;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.06);
+}
+
+select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2371717a' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 9px center;
+  padding-right: 28px;
+  cursor: pointer;
+}
+
+textarea {
+  width: 100%;
+  padding: 8px 10px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 12px;
+  line-height: 1.65;
+  resize: vertical;
+  min-height: 152px;
+  outline: none;
+  transition: border-color 120ms;
+}
+
+textarea::placeholder {
+  color: var(--text-muted);
+}
+
+textarea:focus {
+  border-color: #52525b;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.06);
+}
+
+.wide-field {
+  grid-column: 1 / -1;
+}
+
+.checkbox-row {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 2px 0;
+}
+
+.checkbox-row input {
+  width: 14px;
+  height: 14px;
+  padding: 0;
+  accent-color: var(--text);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.checkbox-row span {
+  font-size: 12px;
+  color: var(--text-2);
+  line-height: 1.4;
+}
+
+/* ===== Buttons ===== */
+.primary-button,
+.secondary-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 34px;
+  padding: 0 14px;
+  border-radius: var(--r);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 120ms, border-color 120ms, opacity 120ms;
+  white-space: nowrap;
+  letter-spacing: 0;
+}
+
+.primary-button {
+  background: var(--text);
+  color: #09090b;
+  border: 1px solid var(--text);
+}
+
+.primary-button:hover:not(:disabled) {
+  background: #e4e4e7;
+  border-color: #e4e4e7;
+}
+
+.secondary-button {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+.secondary-button:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: #3f3f46;
+}
+
+.primary-button:disabled,
+.secondary-button:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.form-grid > .primary-button {
+  grid-column: 1 / -1;
+  margin-top: 2px;
+}
+
+/* ===== Empty State & Messages ===== */
+.empty-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 180px;
+  border: 1px dashed var(--border);
+  border-radius: var(--r-lg);
+  color: var(--text-muted);
+  font-size: 13px;
+  padding: 24px;
+  text-align: center;
+}
+
+.message-card {
+  padding: 12px 14px;
+  border-radius: var(--r);
+  font-size: 13px;
+  border: 1px solid var(--border);
+  color: var(--text-2);
+}
+
+.message-card.error {
+  border-color: rgba(248, 113, 113, 0.3);
+  background: rgba(248, 113, 113, 0.06);
+  color: #fca5a5;
+}
+
+/* ===== Summary Grid ===== */
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.summary-card {
+  padding: 14px 16px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+}
+
+.summary-card h3 {
+  margin: 0 0 10px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-muted);
+}
+
+.metric {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  padding: 6px 0;
+  border-top: 1px solid var(--border-dim);
+}
+
+.metric:first-of-type {
+  border-top: none;
+  padding-top: 0;
+}
+
+.metric-name {
+  font-size: 11px;
+  color: var(--text-muted);
+  flex-shrink: 0;
+  max-width: 55%;
+}
+
+.metric-value {
+  font-family: var(--mono);
+  font-size: 12px;
+  text-align: right;
+  color: var(--text);
+  word-break: break-all;
+}
+
+/* ===== Badges ===== */
+.badge-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 8px;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  height: 20px;
+  padding: 0 7px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--text-2);
+  font-family: var(--mono);
+  font-size: 11px;
+}
+
+.badge.pnl-good {
+  color: var(--green);
+  border-color: rgba(74, 222, 128, 0.25);
+  background: rgba(74, 222, 128, 0.07);
+}
+
+.badge.pnl-bad {
+  color: var(--red);
+  border-color: rgba(248, 113, 113, 0.25);
+  background: rgba(248, 113, 113, 0.07);
+}
+
+.badge.pnl-warn {
+  color: var(--amber);
+  border-color: rgba(251, 191, 36, 0.25);
+  background: rgba(251, 191, 36, 0.07);
+}
+
+/* ===== Scenario Block ===== */
+.scenario-block {
+  margin-top: 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+}
+
+.scenario-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 18px;
+  background: rgba(255, 255, 255, 0.018);
+  border-bottom: 1px solid var(--border);
+}
+
+.scenario-head > div:first-child {
+  flex: 1;
+}
+
+.scenario-head h3 {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.scenario-head p {
+  margin: 3px 0 0;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+/* ===== Table ===== */
+.table-scroll {
+  overflow: auto;
+  max-height: 520px;
+  scrollbar-width: thin;
+  scrollbar-color: #3f3f46 transparent;
+}
+
+.table-scroll::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.table-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.table-scroll::-webkit-scrollbar-thumb {
+  background: #3f3f46;
+  border-radius: 99px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 900px;
+}
+
+th,
+td {
+  padding: 9px 14px;
+  text-align: left;
+  vertical-align: top;
+  white-space: nowrap;
+}
+
+th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--card);
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border);
+}
+
+td {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text-2);
+  border-bottom: 1px solid var(--border-dim);
+}
+
+tbody tr:hover td {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.scenario-highlight-row td {
+  background: rgba(255, 255, 255, 0.04) !important;
+  color: var(--text) !important;
+  font-weight: 500;
+}
+
+.grid-mtm-block table {
+  min-width: 640px;
+}
+
+/* ===== PnL Colors ===== */
+.pnl-good {
+  color: var(--green);
+}
+
+.pnl-bad {
+  color: var(--red);
+}
+
+.pnl-warn {
+  color: var(--amber);
+}
+
+/* ===== Note Block ===== */
+.note-block {
+  margin-top: 14px;
+  padding: 12px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  background: rgba(255, 255, 255, 0.015);
+}
+
+.note-block p {
+  margin: 0;
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.7;
+}
+
+.note-block p strong {
+  color: var(--text-2);
+  font-weight: 500;
+}
+
+/* ===== TP Scenario Grid ===== */
+.tp-scenario-grid {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.01);
+}
+
+.tp-scenario-grid .summary-grid {
+  margin-bottom: 0;
+}
+
+/* ===== Basket Inner Layout ===== */
+.basket-inner {
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+.basket-inner .form-grid {
+  grid-template-columns: 1fr;
+}
+
+.basket-inner > * {
+  min-width: 0;
+}
+
+.basket-output {
+  min-height: 80px;
+  overflow: hidden;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 1100px) {
+  .workspace-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .calculator-sidebar {
+    position: static;
+  }
+
+  .layout {
+    grid-template-columns: 1fr;
+  }
+
+  .controls-panel,
+  .output-panel,
+  .basket-panel {
+    grid-column: 1;
+  }
+
+  .controls-panel { grid-row: 1; }
+  .output-panel   { grid-row: 2; }
+  .basket-panel   { grid-row: 3; }
+
+  .basket-inner {
+    grid-template-columns: 1fr;
+  }
+
+  .grid-calculator-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 680px) {
+  .page-shell {
+    padding: 0 14px 48px;
+  }
+
+  .noscript-shell {
+    padding: 16px 14px 0;
+  }
+
+  .site-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+  }
+
+  .export-dock {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .dock-actions {
+    flex-wrap: wrap;
+  }
+
+  .dock-status {
+    max-width: none;
+    text-align: left;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .calculator-nav-button {
+    padding: 12px;
+  }
+}
